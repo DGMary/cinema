@@ -23,10 +23,34 @@ class MovieView {
         }
     }
 }
+const addBtn = document.getElementById('add');
+const movieBlock = document.getElementById('new-movie-block');
+const confirmBtn = document.getElementById('confirm');
+let inputField = document.getElementById('input');
+
+addBtn.addEventListener("click" , function(){
+    movieBlock.classList.toggle('is-open');
+});
+
+confirmBtn.addEventListener('click' , function(){
+    if(inputField.value){
+
+        let moviess = [];    
+        moviess.push(new MovieView(inputField.value , "Director" , 2018  ));
+       
+        inputField.value = "";
+
+        moviess.filter(function (movie, i) {    
+            movie.render(movieList);
+        })
+    }
+})
+
+
 const movieList = document.getElementById('movie-list');
 var movies = [];
 function addNewMovie(data) {
-    movies.push(new MovieView(data.title, data.director, data.year, data.duration))
+    movies.push(new MovieView(data.title, data.director, data.year, data.duration));
 }
 fetch('data.json').then((data)=> data.json())
 .then(function (result){
@@ -37,5 +61,6 @@ fetch('data.json').then((data)=> data.json())
     movies.forEach(function (movie, i) {
         movie.render(movieList);
     }) 
-})
+});
+
 

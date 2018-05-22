@@ -8,11 +8,25 @@
     <script src="main.js" defer></script>
 </head>
 <body>
+    <style>
+        .is-open.movie-block{
+            opacity: 1;
+            transition: all .4s;
+        }
+        .movie-block{
+            opacity: 0;
+            border:2px solid lightblue;
+            min-height: 40px;
+            padding: 20px;
+            width: 50%;
+            margin:20px 0;
+        }
+    </style>
     <div id='movie-list'>
-        <button>Add new movie</button>
-        <div id="new-movie-block">
-            <label>Name</label><input type="text"/>
-            <button>Confirm!</button>
+        <button id="add">Add new movie</button>
+        <div id="new-movie-block" class="movie-block">
+            <label>Name</label><input type="text" id="input" value=""/>
+            <button id="confirm">Confirm!</button>
         </div>
       
     </div>

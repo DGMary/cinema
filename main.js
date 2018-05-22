@@ -40,7 +40,7 @@ confirmBtn.addEventListener('click' , function(){
        
         inputField.value = "";
 
-        moviess.filter(function (movie, i) {    
+        moviess.filter(function (movie) {    
             movie.render(movieList);
         })
     }

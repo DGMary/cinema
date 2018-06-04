@@ -1,0 +1,17 @@
+.list-container {
+    border: 1px solid gray;
+}
+.movie-item {
+    color: navy;
+}
+.movie-session-item{
+    padding: 5px 10px 5px 25px;
+    border-bottom:1px dotted yellowgreen;
+    display: inline-block;
+    color:#333;
+    font-weight: bold;
+}
+.movie-session-item:before{
+    content:"\263A";
+    margin-right: 5px;
+}

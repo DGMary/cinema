@@ -1,66 +1,130 @@
-class MovieView {
-    constructor (title, director, year, duration) {
-        this.title = title;
-        this.director = director;
-        this.year = year;
-        this.duration = duration;
-        this.el = null;
-    }
-    render (el) {
-        var movie = document.createElement('div');
-        movie.textContent = `Title: ${this.title} 
-                             Year: ${this.year}`;
-        this.el = el.appendChild(movie);
-    }
-    show () {
-        if (this.el !== null) {
-            this.el.style.display = 'block';
+class View {
+    constructor(options/*el, model, className, tagName*/) {
+        let tag = options.tagName || 'div';
+        if (options.el) {
+            this.el = options.el;
+        } else {
+            this.el = document.createElement(tag);
         }
-    }
-    hide () {
-        if (this.el !== null) {
-            this.el.style.display = 'none';
-        }
+        this.model = options.model;
+
+        if (options.className) {
+            this.className = options.className;
+            this.el.classList.add(this.className);
+        }   
     }
 }
-const addBtn = document.getElementById('add');
-const movieBlock = document.getElementById('new-movie-block');
-const confirmBtn = document.getElementById('confirm');
-let inputField = document.getElementById('input');
 
-addBtn.addEventListener("click" , function(){
-    movieBlock.classList.toggle('is-open');
-});
-
-confirmBtn.addEventListener('click' , function(){
-    if(inputField.value){
-
-        let moviess = [];    
-        moviess.push(new MovieView(inputField.value , "Director" , 2018  ));
-       
-        inputField.value = "";
-
-        moviess.filter(function (movie) {    
-            movie.render(movieList);
-        })
+class MovieListView extends View {
+    constructor (options) {
+        super(options);
+        this.children = options.children || [];
     }
+    addMovie(movie) {
+        this.children.push(movie);
+        this.el.appendChild(movie.render().el);
+        //add new movie to the children and render it
+    }
+    render (){
+        if (this.children.length > 0) {
+            let renderWithParams = _.template(templates.movieListHTML);
+            this.children.forEach((movieView) => {
+                this.el.appendChild(movieView.render().el);
+            });
+
+        } else {
+            this.el.innerText = "No movies";
+        }
+        return this;
+    }
+}
+class MovieView extends View {  
+    render () {
+        var renderWithParams = _.template(templates.movieHTML);
+        this.el.textContent = renderWithParams({
+            title: this.model.title,
+            year: this.model.year
+        });
+        return this;
+    }
+}
+
+// 1. Создать экземляр коллекции MovieCollection
+
+let moviesCollection = new MovieCollection(MovieModel, 'data.json');
+
+// 2. Вызываем метод fetch 
+moviesCollection.fetch().then(function (result){
+    //3
+    //complex example
+    let movieListView = new MovieListView({
+        el: document.querySelector('#movie-list'),
+        className: 'list-container',
+        children: result.map(function (movie){
+            return new MovieView({
+                 model: movie,
+                 className: "movie-item"
+            })
+        })
+    });
+    movieListView.render();
 })
 
+//HW Session
 
-const movieList = document.getElementById('movie-list');
-var movies = [];
-function addNewMovie(data) {
-    movies.push(new MovieView(data.title, data.director, data.year, data.duration));
+class MovieSessionListView extends View {
+    constructor (options) {
+        super(options);
+        this.children = options.children || [];
+    }
+    addMovie(movie) {
+        this.children.push(movie);
+        this.el.appendChild(movie.render().el);
+    }
+    render (){
+        if (this.children.length > 0) {
+            let renderWithParams = _.template(templatesSession.movieListHTML);
+            this.children.forEach((movieSessionView) => {
+                this.el.appendChild(movieSessionView.render().el);
+            });
+
+        } else {
+            this.el.innerText = "No movies session";
+        }
+        return this;
+    }
 }
-fetch('data.json').then((data)=> data.json())
-.then(function (result){
-    
-    result.forEach(function (item) {
-        addNewMovie(item);
-    })
-    movies.forEach(function (movie, i) {
-        movie.render(movieList);
-    }) 
-});
+class MovieSessionView extends View {  
+    render () {
+        var renderWithParams = _.template(templatesSession.movieHTML);
+        this.el.textContent = renderWithParams({
+            title: this.model.title,
+            year: this.model.year,
+            day: this.model.day,
+            time: this.model.time,
+            img: this.model.img_src
+        });
+        return this;
+    }
+}
 
+
+
+let moviesSessionCollection = new MovieCollection(MovieModel, 'session.json');
+
+
+moviesSessionCollection.fetch().then(function (result){
+
+    let movieSessionListView = new MovieSessionListView({
+        el: document.querySelector('#movie-list'),
+        className: 'list-session-container',
+        children: result.map(function (movie){
+            return new MovieSessionView({
+                 model: movie,
+                 className: "movie-session-item"
+            })
+        })
+    });
+    movieSessionListView.render();
+})
 
